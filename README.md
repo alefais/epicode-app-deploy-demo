@@ -32,7 +32,7 @@ You can open your browser and go to http://localhost:3000. You should see this J
 }
 ```
 
-Stop the container to stop the server.
+3. Stop the container to stop the server.
 
 ## Scenario 2 - Running a composed Docker application
 
@@ -62,7 +62,7 @@ You can open your browser and go to http://localhost:3000. You should see this J
 
 If you refresh the web page, you should see the visits counter increasing. It is incremented every time there is a new visit to the web page.
 
-Stop the containers to stop the server.
+2. Stop the containers to stop the server.
 
 ```bash
 docker-compose stop   // stop node-web-server and redis-db services
@@ -71,3 +71,37 @@ docker-compose down   // stop and remove node-web-server and redis-db services a
 ```
 
 **Question:** What happens if you deploy again the containers? What is the new value of the visits counter?
+
+## Scenario 3 - Running a composed Docker application with persistent storage
+
+```bash
+cd docker-composed-app-persistent-storage
+```
+
+1. Create a volume for persistent data storage.
+
+```bash
+docker volume create --name=redis-db-persistent-data
+```
+
+2. Now, follow the same steps of **Scenario 2**. The redis-db container will be attached to the volume you just created.
+
+```bash
+docker-compose up     // create and start node-web-server and redis-db services and the network connecting them
+
+docker volume ls      // check the volume
+```
+
+As in **Scenario 2**, when the containers are running, the server is running. 
+
+You can open your browser and go to http://localhost:3000. Refresh the web page as many times as you want, you should see the visits counter increasing accordingly.
+
+3. Stop the containers to stop the server.
+
+```bash
+docker-compose stop   // stop node-web-server and redis-db services
+
+docker-compose down   // stop and remove node-web-server and redis-db services and the network connecting them
+```
+
+**Question:** What happens now if you deploy again the containers? What is the new value of the visits counter?
