@@ -1,0 +1,13 @@
+{
+  "name": "simple-web-server",
+  "version": "1.0.0",
+  "description": "Minimal web app for deployment demos",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
