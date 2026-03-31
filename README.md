@@ -41,16 +41,10 @@ cd docker-composed-app
 ```
 
 1. Build the image of the `Node.js` web server application from the Dockerfile (it's an extended version of the simple web server in the previous scenario).
-The current directory `.` is the build context for the image, a port mapping is configured to map port `3000` on the local host to port `3000` on the Docker container, where the server is listening for connections.
-
-2. Create a running Docker container of the web server application from the custom image created, and a running Docker container for the Redis DB service from the official redis image available in the Docker Hub.
+The current directory `.` is the build context for the image, a port mapping is configured to map port `3000` on the local host to port `3000` on the Docker container, where the server is listening for connections. After that, create a running Docker container of the web server application from the custom image created, and a running Docker container for the Redis DB service from the official redis image available in the Docker Hub.
 
 ```bash
 docker-compose up     // create and start node-web-server and redis-db services and the network connecting them
-
-docker-compose stop   // stop node-web-server and redis-db services
-
-docker-compose down   // stop and remove node-web-server and redis-db services and the network connecting them
 ```
 
 When the containers are running, the server is running.
@@ -68,6 +62,12 @@ You can open your browser and go to http://localhost:3000. You should see this J
 
 If you refresh the web page, you should see the visits counter increasing. It is incremented every time there is a new visit to the web page.
 
-Stop the containers to stop the server. 
+Stop the containers to stop the server.
+
+```bash
+docker-compose stop   // stop node-web-server and redis-db services
+
+docker-compose down   // stop and remove node-web-server and redis-db services and the network connecting them
+```
 
 **Question:** What happens if you deploy again the containers? What is the new value of the visits counter?
