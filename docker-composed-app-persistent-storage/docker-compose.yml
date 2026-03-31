@@ -1,0 +1,16 @@
+services:
+    redis-db:
+        image: redis
+        ports: 
+            - "6379:6379"
+        command: --appendonly yes
+        volumes:
+            - redis-db-data:/data
+    node-web-server:
+        build: .
+        ports:
+            - "3000:3000"
+volumes:
+    redis-db-data:
+        external:
+            name: redis-db-persistent-data
