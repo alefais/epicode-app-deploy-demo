@@ -141,6 +141,8 @@ kind load docker-image simple-web-server:1.0
 
 ```bash
 minikube tunnel
+
+minikube service web-server-service --url
 ```
 -->
 
@@ -152,8 +154,6 @@ kubectl apply -f redisdb-service.yaml
 
 kubectl apply -f webserver-deployment.yaml
 kubectl apply -f webserver-service.yaml
-
-minikube service --url web-server-service
 ```
 
 3. Use port forward in minikube to test the web server service.
@@ -192,3 +192,100 @@ kubectl delete -f webserver-service.yaml
 kubectl delete -f redisdb-deployment.yaml
 kubectl delete -f redisdb-service.yaml
 ```
+
+## Scenario 5 - Deploying a rolling update of your app with Kubernetes
+
+**Prerequisites:**
+You have installed both Minikube and Kubectl locally. You have a DockerHub account.
+
+```bash
+cd kubernetes-app-update
+
+minikube start
+```
+
+1. Create a repository on your DockerHub personal space named `simple-web-server`. Create the web server application image and publish it to DockerHub.
+
+```bash
+docker build -t simple-web-server:1.0 .
+
+docker tag simple-web-server:1.0 <dockerhub-username>/simple-web-server:1.0   # docker tag local-image:tagname new-repo:tagname
+docker push <dockerhub-username>/simple-web-server:1.0                        # docker push new-repo:tagname
+```
+
+2. Update the `webserver-deployment.yaml` with the image name from DockerHub.
+
+```yaml
+containers:
+  - name: node-web-server
+    image: <dockerhub-username>/simple-web-server:1.0
+    ports:
+      - containerPort: 3000
+    env:
+      - name: APP_VERSION
+        value: "1.0"
+```
+
+2. Create deployments and services (follow service dependencies).
+
+```bash
+kubectl apply -f redisdb-deployment.yaml
+kubectl apply -f redisdb-service.yaml
+
+kubectl apply -f webserver-deployment.yaml
+kubectl apply -f webserver-service.yaml
+
+minikube service web-server-service  # open the service in your browser using a reachable URL address and the nodePort defined in `webserver-service.yaml`
+```
+
+The service will be automatically opened in your default browser. If you're running minikube with Docker Desktop as the container driver, a minikube tunnel is needed. This is because containers inside Docker Desktop are isolated from your host computer. The tunnel is automatically created in this case. The terminal (and consequently the tunnel) needs to be open to keep your service reachable.
+
+Refresh the web page as many times as you want, you should see the visits counter increasing accordingly. This example is the one without storage persistence in place. So, if you stop the containers, or delete the cluster, and then re-start/re-deploy everything, the counter will start again from `0`.
+
+3. Watch the pods in a new terminal (and leave it open).
+
+```bash
+kubectl get pods --watch
+```
+
+4. Create an updated version of the web server application image and publish it to DockerHub.
+
+```bash
+docker build -t simple-web-server:1.1 .
+
+docker tag simple-web-server:1.1 <dockerhub-username>/simple-web-server:1.1   # docker tag local-image:tagname new-repo:tagname
+docker push <dockerhub-username>/simple-web-server:1.1                        # docker push new-repo:tagname
+```
+
+5. Update the `webserver-deployment.yaml` to use the new application version and re-run `kubectl apply` to start the rolling update.
+
+```yaml
+containers:
+  - name: node-web-server
+    image: <dockerhub-username>/simple-web-server:1.1
+    ports:
+      - containerPort: 3000
+    env:
+      - name: APP_VERSION
+        value: "1.1"
+```
+
+```bash
+kubectl apply -f webserver-deployment.yaml
+```
+<!--
+# or use
+kubectl set image deployment/simple-web-server app=simple-web-server:1.1
+```
+-->
+
+Observe the application during the rolling update. Throughout the update users experience zero downtime.
+
+Before the update:
+![alt text](kubernetes-app-update/update-screen/before-update.png)
+
+During the update:
+![alt text](kubernetes-app-update/update-screen/during-update.png)
+
+After the update:
+![alt text](kubernetes-app-update/update-screen/after-update.png)
