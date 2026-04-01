@@ -162,6 +162,8 @@ minikube service --url web-server-service
 kubectl port-forward service/web-server-service 3000:3000
 ```
 
+You can open your browser and go to http://localhost:3000. Refresh the web page as many times as you want, you should see the visits counter increasing accordingly. This example is the one without storage persistence in place. So, if you stop the containers, or delete the cluster, and then re-start/re-deploy everything, the counter will start again from `0`.
+
 4. Check and manage your cluster.
 
 ```bash
@@ -175,10 +177,10 @@ minikube delete
 5. Check and manage your deployed services.
 
 ```bash
-$ kubectl get nodes
-$ kubectl get pod
-$ kubectl get service
-$ kubectl get all
+kubectl get nodes
+kubectl get pod
+kubectl get service
+kubectl get all
 ```
 
 5. Remove deployments and services (inverse order w.r.t. creation to respect service dependencies).
