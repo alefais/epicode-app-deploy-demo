@@ -105,3 +105,76 @@ docker-compose down   // stop and remove node-web-server and redis-db services a
 ```
 
 **Question:** What happens now if you deploy again the containers? What is the new value of the visits counter?
+
+## Scenario 4 - Deploying your app with Kubernetes
+
+```bash
+cd kubernetes-app
+
+minikube start        # if config is ok, you should see something like `kubectl is now configured to use "minikube" cluster and "default" namespace by default`
+kubectl cluster-info  # if config is ok, you should see something like `Kubernetes control plane is running at ... CoreDNS is running at ...`
+```
+
+1. Create the web server application image and make it available to your Kubernetes cluster. For local clusters, build and load it into the cluster.
+
+```bash
+docker build -t simple-web-server:1.0 .
+minikube image load simple-web-server:1.0
+
+# or use the kind command
+kind load docker-image simple-web-server:1.0
+```
+<!--
+2. Setup application accessibility. We want to expose the web server running on Minikube. A LoadBalancer service is the standard way to expose a service to the internet. With this method, each service gets its own IP address. Services of type LoadBalancer can be exposed via the minikube tunnel command. It **must be run in a separate terminal window** to keep the LoadBalancer running. Ctrl-C in the terminal can be used to terminate the process at which time the network routes will be cleaned up. [[minikube-docs](https://minikube.sigs.k8s.io/docs/handbook/accessing/)]
+
+```bash
+minikube tunnel
+```
+-->
+
+2. Create deployments and services (follow service dependencies).
+
+```bash
+kubectl apply -f redisdb-deployment.yaml
+kubectl apply -f redisdb-service.yaml
+
+kubectl apply -f webserver-deployment.yaml
+kubectl apply -f webserver-service.yaml
+
+minikube service --url web-server-service
+```
+
+3. Use port forward in minikube to test the web server service.
+
+```bash
+kubectl port-forward service/web-server-service 3000:3000
+```
+
+4. Check and manage your cluster.
+
+```bash
+minikube status
+minikube pause
+minikube unpause
+minikube stop
+minikube delete
+```
+
+5. Check and manage your deployed services.
+
+```bash
+$ kubectl get nodes
+$ kubectl get pod
+$ kubectl get service
+$ kubectl get all
+```
+
+5. Remove deployments and services (inverse order w.r.t. creation to respect service dependencies).
+
+```bash
+kubectl delete -f webserver-deployment.yaml
+kubectl delete -f webserver-service.yaml
+
+kubectl delete -f redisdb-deployment.yaml
+kubectl delete -f redisdb-service.yaml
+```
