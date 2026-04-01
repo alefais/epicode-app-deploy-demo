@@ -4,6 +4,9 @@ Repository for the **T4-04.05 - Examples of Application Deployment** hands-on le
 
 ## Scenario 1 - Running a single Docker application
 
+**Prerequisites:**
+You have installed both Docker locally.
+
 ```bash
 cd docker-simple-app
 ```
@@ -35,6 +38,9 @@ You can open your browser and go to http://localhost:3000. You should see this J
 3. Stop the container to stop the server.
 
 ## Scenario 2 - Running a composed Docker application
+
+**Prerequisites:**
+You have installed both Docker and Docker compose locally.
 
 ```bash
 cd docker-composed-app
@@ -74,6 +80,9 @@ docker-compose down   // stop and remove node-web-server and redis-db services a
 
 ## Scenario 3 - Running a composed Docker application with persistent storage
 
+**Prerequisites:**
+You have installed both Docker and Docker compose locally.
+
 ```bash
 cd docker-composed-app-persistent-storage
 ```
@@ -107,6 +116,9 @@ docker-compose down   // stop and remove node-web-server and redis-db services a
 **Question:** What happens now if you deploy again the containers? What is the new value of the visits counter?
 
 ## Scenario 4 - Deploying your app with Kubernetes
+
+**Prerequisites:**
+You have installed both Minikube and Kubectl locally.
 
 ```bash
 cd kubernetes-app
